@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-Sunrise::Application.config.secret_key_base = '28aa619721ec3f6239d5b798302a40c837390a4261123f694a019764579098fb58ea82f6202e6e2e17b54400f6cb3840966fdff8227ed19eaf13b3d441337f12'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+Sunrise::Application.config.secret_key_base = secure_token
